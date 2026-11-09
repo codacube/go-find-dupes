@@ -1,0 +1,27 @@
+# Use official Golang image as base
+FROM docker.io/library/golang:1.25 AS debug
+
+# RUN apt-get update && apt-get install -y make
+
+# Install Air (live reload tool) for hot-reloading
+RUN go install github.com/air-verse/air@latest
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+# Set working directory inside containeqr
+WORKDIR /app
+COPY . .
+RUN go build -gcflags="all=-N -l" -o /tmp/go-find-dupes .
+
+# For delve
+EXPOSE 2345
+
+# Jump into bash
+# dlv debug --headless --listen=127.0.0.1:43000 --api-version=2 -- main.go -- gdrive <folder-id>
+ENTRYPOINT ["/go/bin/dlv", "--listen=:2345", "--headless=true", "--api-version=2", "exec", "/tmp/go-find-dupes", "--", "local", "/data"]
+
+# To build the image
+# docker build -t go-find-dupes .
+
+# To run it - mount the $(pwd) to the image /app folder (volume mount)
+# docker run --rm -it -v ${pwd}:/app -v <local folder, eg. C:\Projects>:/data -p 2345:2345 go-find-dupes
+# docker run --rm -it -v $(pwd):/app -v <local folder, eg. ~/Projects>:/data -p 2345:2345 go-find-dupes

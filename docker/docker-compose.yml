@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.watchexec-debug
+    image: go-find-dupes-debug
+    cap_add:
+      - SYS_PTRACE   # Allows the debugger to attach
+    security_opt:
+      - "apparmor=unconfined" # Often required for Linux/Podman
+      - "seccomp=unconfined"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    ports:
+      - "2345:2345"  # Delve Debugger Port
+    volumes:
+      - ./:/app      # Mount source code for Air to watch
+      - ../src:/data
+
+    #    -r: Restart on changes
+    #    -e go: Watch .go files
+    #    --: Separator for the command to run
+    #    dlv debug: Compile and debug
+    #    --headless: Run as server
+    #    --continue: Start running immediately (don't wait for attach)
+    #    --accept-multiclient: Allow IDE to connect/disconnect repeatedly
+    command: >
+      watchexec -r -e go -- 
+      dlv debug --headless --listen=:2345 --api-version=2 --accept-multiclient --continue

@@ -1,0 +1,6 @@
+# Avoid sending these to Docker context
+# TODO Is this needed?
+.git
+vendor
+node_modules
+*.log
