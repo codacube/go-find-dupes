@@ -6,7 +6,7 @@ __debugbin*
 duplicates_*.*
 *.log
 _no-sync/
-output/
+logs/
 
 tmp/
 dist/

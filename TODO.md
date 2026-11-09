@@ -11,3 +11,4 @@
 - Check the docker files (ie. can still debug within VSCode etc?)
 - Create tests
 - Record gif of program in use
+- Check all TODOs
